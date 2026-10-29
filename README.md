@@ -43,6 +43,11 @@ Nothing here touches a real network: two VMs, both mine, sealed off from the phy
 | 12 | Two Kerberos failures diagnosed and cleared: clock skew, then an unsupported etype | `35`, `36` |
 | 13 | LDAPS probe never received a certificate — recorded as inconclusive, not as a finding | `19` |
 
+Two companion pages: **[how to rebuild this lab](build/README.md)** (a provisioning script that re-creates
+the four accounts and checks the posture it claims) and **[what this looks like to a defender](docs/attack-and-detection.md)**
+(every step mapped to an ATT&CK technique, the Windows event it leaves, and the control that would
+have stopped it).
+
 ## Walkthrough
 
 ### 1. Reconnaissance
@@ -260,7 +265,9 @@ the certificate, and guessing what it would have said is how a report loses cred
 - Try a delegated (constrained) setup, so I can practise abusing it instead of only proving its absence.
 - Enable AES-only Kerberos deliberately and confirm which etypes the KDC offers — that `ETYPE_NOSUPP`
   deserves a proper explanation rather than a shrug.
-- Feed the auth log from this DC into `logtriage` and see which of these steps a threshold rule catches.
+- Add a Windows event parser to `logtriage` for `4768`/`4769`/`4771`/`5145`. Right now none of this
+  enumeration appears in my own detection tool, which is a scope gap rather than a mystery — the rules
+  are written in the [detection notes](docs/attack-and-detection.md), waiting for an engine.
 - Finish the LDAPS question with a CA-issued certificate instead of the self-signed default.
 
 ## Honest limits
@@ -275,6 +282,8 @@ screenshots belong to throwaway lab accounts and the environment has since been 
 ## Contents
 
 ```
+build/         New-LabEnvironment.ps1 (idempotent rebuild) + the build runbook
+docs/          ATT&CK mapping, Windows event IDs and detection logic per step
 screenshots/   every step, in order (29 images)
 lab-users.txt  the three lab accounts used for the pre-auth check
 LICENSE        MIT
